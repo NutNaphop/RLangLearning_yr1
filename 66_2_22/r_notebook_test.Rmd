@@ -1,0 +1,44 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(broom)
+library(psych)
+```
+
+```{r}
+library(XLConnect)
+```
+
+```{r}
+names <- c("Michael","Nicole","Anna")
+gender <- c('m','f','f')
+weight <- c(78,64,59)
+height <- c(176,163,158)
+mean(height)
+median(height)
+min(height)
+max(height)
+range(weight)
+plot(height,weight)
+h1 <- (height/100)*(height/100)
+h1
+bmis <- weight/h1
+summary(weight)
+table(gender)
+df <- data.frame(names,weight,height)
+df
+```
+
+```{r}
+coffee = c("Capuchino","Mocha","Latte","Espresso","Machiato")
+number = c(10,6,7,5,7)
+price = c(65,70,60,55,65)
+total = number * price
+df_cf = data.frame(coffee,number,price,total)
+rbind(df_cf, c("Total", colSums(df_cf[-1])))
+```
+
+
