@@ -1,0 +1,84 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(XLConnect)
+library(readxl)
+library(tidyverse)
+library(broom)
+library(psych)
+library(modelr)
+library(ggfortify)
+```
+
+```{r}
+demo = "Expense.xlsx"
+LW = loadWorkbook(demo)
+LW
+```
+
+```{r}
+RW <- readWorksheet(LW,sheet = "Expenditure")
+RW
+```
+
+```{r}
+RW2 <- readWorksheet(LW,sheet = "Meal")
+RW2
+```
+
+```{r}
+df = data.frame(RW)
+df
+```
+
+```{r}
+df2 = data.frame(RW2)
+df2
+```
+
+
+```{r}
+RW4 = read_excel(demo,sheet = "Meal" , range = cell_cols("B:C"))
+RW4
+```
+
+```{r}
+df3 = data.frame(RW4)
+df3
+```
+
+```{r}
+describe(df3) # Statical Check such as mean median sd max min 
+```
+
+```{r}
+df3 %>% ggplot(aes(x=Beverage,y = Bread))+geom_point()
+
+```
+```{r}
+df3 %>% ggplot(aes(x=Beverage,y = Bread))+geom_point()+stat_smooth(method='lm',se = FALSE)
+```
+
+```{r}
+model = lm(Bread~Beverage,data=df3)
+model
+```
+
+```{r}
+tidy(model)
+#beta = 0.1491 
+#Alpha = 43.0213 
+```
+
+
+```{r}
+summary(model) # * = 0.1 ** 0.02 *** 0.003 p-val = * (Significant) #position of point 
+```
+
+
+
+
