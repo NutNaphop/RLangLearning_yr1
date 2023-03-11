@@ -1,0 +1,142 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(XLConnect)
+library(readxl)
+library(ggplot2)
+library(broom)
+library(tidyverse)
+library(psych)
+```
+```{r}
+data_xl = "data.xlsx"
+wb = loadWorkbook(data_xl)
+wb
+```
+```{r}
+df = readWorksheet(wb,sheet="Use_BandG")
+df
+```
+$$ Find One Way ONOVA section $$
+```{r}
+df_eng = subset(df,Faculty == "วิศวกรรมศาสตร์ ศรีราชา")
+df_sci = subset(df,Faculty == "วิทยาศาสตร์ ศรีราชา")
+df_scm = subset(df,Faculty == "วิทยาการจัดการ")
+df_msi = subset(df,Faculty == "พาณิชยนาวีนานาชาติ")
+df_eco = subset(df,Faculty == "เศรษฐศาสตร์ ศรีราชา")
+# Display
+df_eng
+df_sci
+df_scm
+df_msi
+df_eco
+```
+```{r}
+#Sort The data
+engineer = df_eng$HourPerDay
+science = df_sci$HourPerDay
+scienceM = df_scm$HourPerDay
+marine = df_msi$HourPerDay
+econ = df_eco$HourPerDay
+engineer
+science
+scienceM
+marine
+econ
+```
+```{r}
+# Create dataframe to use with Anova
+anova_df = data.frame(
+  hour_per_day = c(engineer,science,scienceM,marine,econ),
+   group = rep(c("engineer", "science", "scienceM", "Marine", "Economic"),
+                               times = c(length(engineer), length(science), length(scienceM),length(marine), length(econ))))
+describe(anova_df)
+anova_df
+```
+```{r}
+# Find Anova
+model <- aov(hour_per_day ~ group, data = anova_df)
+model
+```
+```{r}
+summary(model) # Watch F value > 0.05
+```
+$$ T test method Section $$
+```{r}
+df_mw = readWorksheet(wb,sheet="Use_BandG")
+men = subset(df_mw,Sex=="ชาย")$HourPerDay
+women = subset(df_mw,Sex=="หญิง")$HourPerDay
+men
+women
+```
+```{r}
+t.test(men,women)
+```
+$$ Regression Section$$
+```{r}
+#Cor 
+corl_mw = cor(men,women)
+corl_mw
+```
+```{r}
+df_cl = data.frame(men = men , women = women)
+df_cl
+model2 = lm(men~women , data = df_cl)
+model2 # Intercept
+```
+```{r}
+df_cl %>% ggplot(aes(x=men,y = women))+
+  geom_point()+stat_smooth(method='lm',se = FALSE)
+```
+```{r}
+summary(model2) # * = 0.1 ** 0.02 *** 0.003 p-val = * (Significant) #position of point 
+```
+```{r}
+tidy(model2)
+```
+```{r}
+glance(model2)
+```
+```{r}
+plot(model2)
+```
+
+$$ y=10.45-0.18 \times women$$
+$$ Two wat anova section $$
+```{r}
+wb_def_hcn = read_excel(data_xl,sheet='Use_BandG',range = cell_cols("B:G"))
+wb_def_hcn
+sub_men = subset (wb_def_hcn , Sex == "ชาย")
+sub_women = subset (wb_def_hcn , Sex == "หญิง")
+sub_men
+sub_women
+df_hcn = data.frame(
+  hour_per_day = c(sub_men$HourPerDay,sub_men$HourPerDay),
+  num_apps =  c(sub_men$NumberOfApp,sub_men$NumberOfApp),
+  sex = rep(c(sub_men$Sex, sub_women$Sex))
+)
+df_hcn
+
+```
+```{r}
+# perform a two-way ANOVA
+model3 <- aov(hour_per_day ~ sex + num_apps, data = df)
+summary(model3)
+#The name of the dependent variable is "HourPerDay", and the names of the independent variables are "CheckPerDay" and "NumberOfApp".
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
