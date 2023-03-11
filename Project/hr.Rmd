@@ -11,6 +11,8 @@ library(broom)
 library(tidyverse)
 library(psych)
 ```
+$$ read workbook and make data frame $$
+
 ```{r}
 data_xl = "data.xlsx"
 wb = loadWorkbook(data_xl)
@@ -20,8 +22,23 @@ wb
 df = readWorksheet(wb,sheet="Use_BandG")
 df
 ```
-$$ Find One Way ONOVA section $$
+$$ Describe data $$
 ```{r}
+describe(df$HourPerDay)
+describe(df$CheckPerDay)
+describe(df$NumberOfApp)
+```
+
+$$ Find On
+e Way ONOVA section $$
+```{r}
+# Hyphothesis is "Faculty membership has a significant effect on the number of hours students use their mobile phones per day." 
+# Alternative = !Hyphoothesis
+#Static method : one way anova
+```
+
+```{r}
+# List
 df_eng = subset(df,Faculty == "วิศวกรรมศาสตร์ ศรีราชา")
 df_sci = subset(df,Faculty == "วิทยาศาสตร์ ศรีราชา")
 df_scm = subset(df,Faculty == "วิทยาการจัดการ")
@@ -35,6 +52,7 @@ df_msi
 df_eco
 ```
 ```{r}
+
 #Sort The data
 engineer = df_eng$HourPerDay
 science = df_sci$HourPerDay
@@ -75,20 +93,34 @@ women
 ```{r}
 t.test(men,women)
 ```
-$$ Regression Section$$
+$$ Correlation $$
 ```{r}
 #Cor 
 corl_mw = cor(men,women)
 corl_mw
+# - = Relation not thee same way
 ```
 ```{r}
-df_cl = data.frame(men = men , women = women)
+plot(men,women)
+abline(lm(women ~ men))
+```
+
+$$ Regression Section$$
+```{r}
+wb_app_check= read_excel(data_xl,sheet='Use_BandG',range = cell_cols("F:G"))
+wb_app_check
+```
+
+```{r}
+df_cl = data.frame(wb_app_check)
 df_cl
-model2 = lm(men~women , data = df_cl)
+model2 = lm(CheckPerDay~NumberOfApp , data = df_cl)
+# CheckPerDay as dependent variable
+#NumberOfApp as independent variable
 model2 # Intercept
 ```
 ```{r}
-df_cl %>% ggplot(aes(x=men,y = women))+
+df_cl %>% ggplot(aes(x=CheckPerDay,y = NumberOfApp))+
   geom_point()+stat_smooth(method='lm',se = FALSE)
 ```
 ```{r}
@@ -104,7 +136,9 @@ glance(model2)
 plot(model2)
 ```
 
-$$ y=10.45-0.18 \times women$$
+# regression equation
+$$ y=16.45 +0.13x$$
+# It is mean NumberOfApp has increase 1 app , Check time will increase 0.13 hour
 $$ Two wat anova section $$
 ```{r}
 wb_def_hcn = read_excel(data_xl,sheet='Use_BandG',range = cell_cols("B:G"))
@@ -123,7 +157,7 @@ df_hcn
 ```
 ```{r}
 # perform a two-way ANOVA
-model3 <- aov(hour_per_day ~ sex + num_apps, data = df)
+model3 <- aov(hour_per_day ~ sex + num_apps, data = df_hcn)
 summary(model3)
 #The name of the dependent variable is "HourPerDay", and the names of the independent variables are "CheckPerDay" and "NumberOfApp".
 ```
