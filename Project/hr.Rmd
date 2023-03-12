@@ -29,8 +29,7 @@ describe(df$CheckPerDay)
 describe(df$NumberOfApp)
 ```
 
-$$ Find On
-e Way ONOVA section $$
+$$ Find One Way ONOVA section $$
 ```{r}
 # Hyphothesis is "Faculty membership has a significant effect on the number of hours students use their mobile phones per day." 
 # Alternative = !Hyphoothesis
@@ -81,6 +80,7 @@ model
 ```
 ```{r}
 summary(model) # Watch F value > 0.05
+tidy(model)
 ```
 $$ T test method Section $$
 ```{r}
@@ -96,13 +96,13 @@ t.test(men,women)
 $$ Correlation $$
 ```{r}
 #Cor 
-corl_mw = cor(men,women)
+corl_mw = cor(df$CheckPerDay,df$NumberOfApp)
 corl_mw
-# - = Relation not thee same way
+# - = Relation not the same way (in case it Low)
 ```
 ```{r}
-plot(men,women)
-abline(lm(women ~ men))
+plot(df$CheckPerDay,df$NumberOfApp)
+abline(lm(df$NumberOfApp ~ df$CheckPerDay))
 ```
 
 $$ Regression Section$$
